@@ -27,7 +27,7 @@
       </nav>
       <div class="header-actions">
         <button class="btn-login" onclick="abrirModalLogin()">Login</button>
-        <button class="btn-carrinho">
+        <button class="btn-carrinho" onclick="abrirModalCarrinho()">
           🛒 Carrinho (<span id="quantidade-carrinho">0</span>)
         </button>
       </div>
@@ -213,6 +213,24 @@
         <input type="password" placeholder="Confirmar Senha" required>
         <button type="submit" class="btn-primary">Registrar</button>
       </form>
+    </div>
+  </div>
+
+  <!-- Modal do Carrinho -->
+  <div class="modal" id="modalCarrinho">
+    <div class="modal-content">
+      <span class="close" onclick="fecharModalCarrinho()">&times;</span>
+      <h2>Meu Carrinho</h2>
+      <div id="itens-carrinho">
+        <!-- Itens do carrinho serão carregados aqui -->
+      </div>
+      <div class="carrinho-total">
+        <h3>Total: R$ <span id="total-carrinho">0,00</span></h3>
+        <div class="carrinho-acoes">
+          <button class="btn-secondary" onclick="limparCarrinho()">Limpar Carrinho</button>
+          <button class="btn-primary" onclick="finalizarCompra()">Finalizar Compra</button>
+        </div>
+      </div>
     </div>
   </div>
 

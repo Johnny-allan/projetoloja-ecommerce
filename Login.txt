@@ -1,0 +1,5 @@
+ credenciais
+
+Email admin@projetoloja.com
+
+Senha admin123

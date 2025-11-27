@@ -227,6 +227,122 @@ function atualizarContadorCarrinho() {
     contador.textContent = total;
 }
 
+function abrirModalCarrinho() {
+    exibirItensCarrinho();
+    document.getElementById('modalCarrinho').style.display = 'block';
+}
+
+function fecharModalCarrinho() {
+    document.getElementById('modalCarrinho').style.display = 'none';
+}
+
+function exibirItensCarrinho() {
+    const container = document.getElementById('itens-carrinho');
+    const totalElement = document.getElementById('total-carrinho');
+    
+    if (carrinho.length === 0) {
+        container.innerHTML = `
+            <div class="carrinho-vazio">
+                <p>Seu carrinho está vazio</p>
+                <button class="btn-primary" onclick="fecharModalCarrinho()">Continuar Comprando</button>
+            </div>
+        `;
+        totalElement.textContent = '0,00';
+        return;
+    }
+    
+    container.innerHTML = carrinho.map(item => `
+        <div class="item-carrinho">
+            <img src="${item.imagem}" alt="${item.nome}" class="item-carrinho-imagem" 
+                 onerror="this.src='https://via.placeholder.com/80x60?text=Produto'">
+            <div class="item-carrinho-info">
+                <h4>${item.nome}</h4>
+                <p>R$ ${item.preco.toFixed(2)} cada</p>
+                <p>Subtotal: R$ ${(item.preco * item.quantidade).toFixed(2)}</p>
+            </div>
+            <div class="item-carrinho-quantidade">
+                <button class="btn-quantidade" onclick="alterarQuantidade(${item.id}, -1)">-</button>
+                <span>${item.quantidade}</span>
+                <button class="btn-quantidade" onclick="alterarQuantidade(${item.id}, 1)">+</button>
+            </div>
+            <button class="btn-remover" onclick="removerDoCarrinho(${item.id})">Remover</button>
+        </div>
+    `).join('');
+    
+    const total = carrinho.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
+    totalElement.textContent = total.toFixed(2).replace('.', ',');
+}
+
+function alterarQuantidade(produtoId, mudanca) {
+    const item = carrinho.find(item => item.id === produtoId);
+    if (!item) return;
+    
+    const produto = produtos.find(p => p.id === produtoId);
+    if (!produto) return;
+    
+    const novaQuantidade = item.quantidade + mudanca;
+    
+    if (novaQuantidade <= 0) {
+        removerDoCarrinho(produtoId);
+        return;
+    }
+    
+    if (novaQuantidade > produto.estoque) {
+        alert(`Estoque disponível: ${produto.estoque} unidades`);
+        return;
+    }
+    
+    item.quantidade = novaQuantidade;
+    exibirItensCarrinho();
+    atualizarContadorCarrinho();
+}
+
+function removerDoCarrinho(produtoId) {
+    const index = carrinho.findIndex(item => item.id === produtoId);
+    if (index !== -1) {
+        carrinho.splice(index, 1);
+        exibirItensCarrinho();
+        atualizarContadorCarrinho();
+        
+        const produto = produtos.find(p => p.id === produtoId);
+        if (produto) {
+            alert(`${produto.nome} removido do carrinho!`);
+        }
+    }
+}
+
+function limparCarrinho() {
+    if (carrinho.length === 0) {
+        alert('Carrinho já está vazio!');
+        return;
+    }
+    
+    if (confirm('Tem certeza que deseja limpar todo o carrinho?')) {
+        carrinho = [];
+        exibirItensCarrinho();
+        atualizarContadorCarrinho();
+        alert('Carrinho limpo com sucesso!');
+    }
+}
+
+function finalizarCompra() {
+    if (carrinho.length === 0) {
+        alert('Carrinho está vazio!');
+        return;
+    }
+    
+    const total = carrinho.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
+    const itens = carrinho.length;
+    
+    if (confirm(`Finalizar compra?\n\nItens: ${itens}\nTotal: R$ ${total.toFixed(2)}\n\nEsta é uma demonstração - nenhuma cobrança será feita.`)) {
+        carrinho = [];
+        exibirItensCarrinho();
+        atualizarContadorCarrinho();
+        fecharModalCarrinho();
+        alert('Compra finalizada com sucesso!\n\nObrigado por usar nossa loja de demonstração!');
+    }
+}
+
 // Modais
 function abrirModalLogin() {
     document.getElementById('modalLogin').style.display = 'block';
