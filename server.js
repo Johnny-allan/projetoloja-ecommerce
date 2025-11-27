@@ -1,0 +1,27 @@
+const express = require('express');
+const cors = require('cors');
+require('dotenv').config();
+
+const app = express();
+const PORT = process.env.PORT || 10000;
+
+// Middlewares
+app.use(cors());
+app.use(express.json());
+app.use(express.static('front'));
+
+// Rota de teste direta
+app.post('/api/teste-direto', (req, res) => {
+    res.json({ success: true, message: 'Rota direta funcionando!', body: req.body });
+});
+
+// Rotas
+app.use('/api/produtos', require('./src/routes/produtos-novo'));
+app.use('/api/usuarios', require('./src/routes/usuarios'));
+
+const { tratarErros } = require('./src/middleware/validacao');
+app.use(tratarErros);
+
+app.listen(PORT, () => {
+    console.log(`Servidor rodando na porta ${PORT}`);
+});
