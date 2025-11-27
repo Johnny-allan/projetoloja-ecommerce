@@ -81,6 +81,24 @@ async function fazerLogin(event) {
     const email = form.querySelector('input[type="text"]').value;
     const senha = form.querySelector('input[type="password"]').value;
     
+    // Login hardcoded para admin
+    if (email === 'admin@projetoloja.com' && senha === 'admin123') {
+        const adminUser = {
+            id: 1,
+            nome: "Administrador",
+            email: "admin@projetoloja.com",
+            tipo: "admin"
+        };
+        
+        localStorage.setItem('usuario', JSON.stringify(adminUser));
+        usuarioLogado = adminUser;
+        fecharModalLogin();
+        atualizarInterfaceUsuario();
+        alert('Login realizado com sucesso!');
+        return;
+    }
+    
+    // Tentar login via API para outros usuários
     try {
         const response = await fetch(`${API_BASE_URL}/usuarios/login`, {
             method: 'POST',
@@ -99,11 +117,11 @@ async function fazerLogin(event) {
             atualizarInterfaceUsuario();
             alert('Login realizado com sucesso!');
         } else {
-            alert(data.message);
+            alert('Credenciais inválidas');
         }
     } catch (error) {
         console.error('Erro no login:', error);
-        alert('Erro ao fazer login');
+        alert('Credenciais inválidas');
     }
 }
 
